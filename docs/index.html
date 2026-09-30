@@ -259,8 +259,8 @@
         </div>
         <div class="chart-visual">
           <div class="chart-wrap">
-            <canvas id="chart" role="img" aria-label="Live chart showing the prices of three stocks"></canvas>
-            <div class="chart-tooltip" id="chart-label">LIVE · 3 STOCKS</div>
+            <canvas id="chart" role="img" aria-label="Live chart showing each stock's percentage change since the round started"></canvas>
+            <div class="chart-tooltip" id="chart-label">CHANGE SINCE OPEN</div>
           </div>
           <aside class="chart-price-rail" id="chart-prices" aria-label="Current stock prices"></aside>
         </div>
@@ -508,8 +508,7 @@
 
       function chartSeries(stock) {
         const prices = chartPrices(stock);
-        const baseline = prices[0] ?? stock.price;
-        return prices.map(price => ((price / baseline) - 1) * 100);
+        return prices.map(price => ((price / stock.start) - 1) * 100);
       }
 
       function animateChart(timestamp) {
