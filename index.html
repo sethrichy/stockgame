@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d0b">
+  <title>Market Dash — Stock Trading Game</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+    :root {
+      color-scheme: dark;
+      --ink: #e7f1eb;
+      --muted: #91a49a;
+      --paper: #080d0b;
+      --panel: #101814;
+      --line: #28382f;
+      --lime: #caff61;
+      --green: #5ef0aa;
+      --red: #ff718b;
+      --blue: #85b7ff;
+      --yellow: #ffd36e;
+      --mono: 'DM Mono', 'Courier New', monospace;
+      --sans: 'Space Grotesk', 'Trebuchet MS', sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100svh;
+      overflow: hidden;
+      background-color: var(--paper);
+      background-image: radial-gradient(ellipse at 50% -20%, #163022 0, transparent 58%), linear-gradient(#24372d55 1px, transparent 1px), linear-gradient(90deg, #24372d55 1px, transparent 1px);
+      background-size: auto, 36px 36px, 36px 36px;
+      color: var(--ink);
+      font-family: var(--sans);
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button { font: inherit; }
+
+    .topbar {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3%;
+      background: #080d0bf2;
+      border-bottom: 1px solid var(--line);
+      color: var(--ink);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand { display: flex; align-items: center; gap: 11px; font-weight: 700; letter-spacing: 0; }
+    .brand-mark { display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid #caff6170; border-radius: 6px; background: #caff6118; color: var(--lime); font-size: 17px; box-shadow: 0 0 18px #caff6120; }
+    .brand-name { font-size: 17px; }
+    .brand-tag { margin-left: 2px; color: var(--muted); font-family: var(--mono); font-size: 10px; font-weight: 400; }
+    .market-status { display: flex; align-items: center; gap: 8px; color: #c3d2c9; font-family: var(--mono); font-size: 11px; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--lime); box-shadow: 0 0 10px #caff6199; }
+
+    main { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 12px; width: 100%; height: calc(100vh - 64px); height: calc(100svh - 64px); min-height: 0; margin: 0; padding: 12px 3%; overflow: hidden; }
+    .page-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 58px; margin-bottom: 0; }
+    .eyebrow { margin: 0 0 8px; color: var(--lime); font-family: var(--mono); font-size: 10px; font-weight: 500; letter-spacing: 0; text-transform: uppercase; }
+    h1 { margin: 0; font-size: clamp(28px, 3.2vw, 40px); line-height: 1.05; letter-spacing: 0; }
+    .subtitle { margin: 9px 0 0; color: var(--muted); font-size: 13px; }
+    .round-box { min-width: 170px; padding: 10px 13px; border: 1px solid var(--line); border-radius: 6px; background: #101814e8; box-shadow: inset 0 1px 0 #ffffff08; }
+    .round-label { color: var(--muted); font-family: var(--mono); font-size: 9px; text-transform: uppercase; }
+    .round-row { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+    .round-time { font-family: var(--mono); font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .round-time.urgent { color: var(--red); }
+    .round-track { height: 3px; margin-top: 8px; overflow: hidden; border-radius: 3px; background: #26352d; }
+    .round-fill { width: 100%; height: 100%; background: var(--lime); box-shadow: 0 0 10px #caff61aa; transform-origin: left; transition: transform .35s linear, background .3s; }
+
+    .score-strip { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: #101814ed; box-shadow: 0 12px 30px #0003, inset 0 1px 0 #ffffff08; }
+    .metric { padding: 14px 19px 15px; border-right: 1px solid var(--line); }
+    .metric:last-child { border-right: 0; }
+    .metric-label { color: var(--muted); font-family: var(--mono); font-size: 9px; text-transform: uppercase; }
+    .metric-value { margin-top: 7px; font-family: var(--mono); font-size: 20px; font-weight: 500; font-variant-numeric: tabular-nums; }
+    .metric-value.positive { color: var(--green); }
+    .metric-value.negative { color: var(--red); }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(265px, .45fr); grid-template-rows: minmax(0, 1fr) auto; align-items: stretch; min-height: 0; gap: 10px; }
+    .panel { min-width: 0; min-height: 0; border: 1px solid var(--line); border-radius: 6px; background: #101814ed; box-shadow: 0 12px 30px #0003, inset 0 1px 0 #ffffff08; }
+    .chart-panel { display: grid; grid-column: 1; grid-row: 1; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
+    .trade-panel { grid-column: 1; grid-row: 2; }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 15px; border-bottom: 1px solid var(--line); background: #ffffff03; }
+    .panel-title { margin: 0; font-size: 14px; font-weight: 600; }
+    .market-timestamp { color: var(--muted); font-family: var(--mono); font-size: 9px; }
+    .chart-visual { display: grid; grid-template-columns: minmax(0, 1fr) 150px; min-height: 0; }
+    .chart-wrap { position: relative; min-width: 0; min-height: 0; height: 100%; padding: 8px 12px 2px 8px; }
+    #chart { display: block; width: 100%; height: 100%; }
+    .chart-tooltip { position: absolute; top: 15px; left: 62px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: #0b120feF; color: var(--lime); font-family: var(--mono); font-size: 9px; pointer-events: none; }
+    .chart-price-rail { display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); align-items: center; min-height: 0; padding: 12px 14px; border-left: 1px solid var(--line); background: #080d0b55; }
+    .chart-price-item { min-width: 0; padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .chart-price-item:last-child { border-bottom: 0; }
+    .chart-price-symbol { display: flex; align-items: center; gap: 7px; color: var(--muted); font-family: var(--mono); font-size: 10px; }
+    .chart-price-value { margin-top: 7px; color: var(--ink); font-family: var(--mono); font-size: 17px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .chart-price-caption { margin-top: 4px; color: #74877c; font-family: var(--mono); font-size: 8px; }
+    .legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 19px 14px; border-top: 1px solid var(--line); }
+    .legend-item { display: flex; align-items: center; gap: 7px; color: #c1d0c7; font-size: 10px; }
+    .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    .side-column { display: grid; grid-column: 2; grid-row: 1 / span 2; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.1fr) minmax(0, .9fr); min-height: 0; gap: 10px; }
+    .stock-list { padding: 0 12px; }
+    .stock-row { padding: 8px 2px; border-bottom: 1px solid var(--line); }
+    .stock-row:last-child { border-bottom: 0; }
+    .stock-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .stock-identity { display: flex; align-items: center; gap: 9px; min-width: 0; }
+    .stock-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; }
+    .ticker { font-size: 13px; font-weight: 700; }
+    .company { overflow: hidden; margin-top: 2px; color: var(--muted); font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
+    .stock-price { text-align: right; font-family: var(--mono); font-size: 14px; font-variant-numeric: tabular-nums; }
+    .stock-change { margin-top: 3px; text-align: right; font-family: var(--mono); font-size: 9px; }
+    .stock-change.positive { color: var(--green); }
+    .stock-change.negative { color: var(--red); }
+    .stock-position { display: flex; justify-content: space-between; margin-top: 11px; color: var(--muted); font-family: var(--mono); font-size: 9px; }
+    .trade-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 8px 14px; }
+    .trade-stock { min-width: 0; padding: 0 13px; border-right: 1px solid var(--line); }
+    .trade-stock:first-child { padding-left: 0; }
+    .trade-stock:last-child { padding-right: 0; border-right: 0; }
+    .trade-stock-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .trade-stock-name { display: flex; align-items: center; gap: 7px; }
+    .trade-stock .stock-price { font-size: 12px; }
+    .trade-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
+    .trade-button { min-height: 33px; border: 1px solid #34473b; border-radius: 4px; background: #141e18; color: var(--ink); font-size: 10px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s, transform .15s, box-shadow .15s; }
+    .trade-button:hover:not(:disabled) { transform: translateY(-1px); }
+    .trade-button.buy:hover:not(:disabled) { border-color: var(--green); background: #193427; color: var(--green); box-shadow: 0 0 16px #5ef0aa20; }
+    .trade-button.sell:hover:not(:disabled) { border-color: var(--red); background: #361c24; color: var(--red); box-shadow: 0 0 16px #ff718b20; }
+    .trade-button:disabled { opacity: .4; cursor: not-allowed; }
+    .trade-button:focus-visible, .restart-button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+    .feed { padding: 0 12px 4px; overflow: auto; }
+    .feed-item { display: grid; grid-template-columns: 8px 1fr auto; align-items: baseline; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 10px; }
+    .feed-item:last-child { border-bottom: 0; }
+    .feed-mark { width: 6px; height: 6px; margin-top: 4px; border-radius: 50%; background: var(--green); }
+    .feed-mark.sell { background: var(--red); }
+    .feed-text { color: #c1d0c7; line-height: 1.4; }
+    .feed-time { color: #84978d; font-family: var(--mono); font-size: 9px; }
+    .empty-feed { padding: 20px 0; color: var(--muted); font-size: 11px; text-align: center; }
+
+    .toast { position: fixed; z-index: 5; right: 22px; bottom: 22px; padding: 11px 15px; border: 1px solid #415a4a; border-radius: 5px; background: #111a15; color: var(--ink); font-family: var(--mono); font-size: 11px; box-shadow: 0 5px 24px #0008, 0 0 18px #5ef0aa18; animation: toast-in .2s ease-out; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .game-overlay { position: fixed; z-index: 10; inset: 0; display: grid; place-items: center; padding: 20px; background: #030705d9; backdrop-filter: blur(6px); }
+    .game-modal { width: min(100%, 390px); padding: 30px; border: 1px solid var(--line); border-radius: 6px; background: #101814; box-shadow: 0 24px 80px #0009, 0 0 35px #5ef0aa12; text-align: center; animation: modal-in .25s ease-out; }
+    @keyframes modal-in { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-icon { display: grid; place-items: center; width: 40px; height: 40px; margin: 0 auto 16px; border: 1px solid #5ef0aa55; border-radius: 50%; background: #5ef0aa12; color: var(--green); font-size: 20px; }
+    .game-modal h2 { margin: 0; font-size: 24px; }
+    .modal-copy { margin: 9px 0 20px; color: var(--muted); font-size: 12px; line-height: 1.6; }
+    .final-pnl { margin: 5px 0 22px; font-family: var(--mono); font-size: 33px; font-weight: 500; }
+    .restart-button { width: 100%; min-height: 43px; border: 1px solid #caff6155; border-radius: 4px; background: #caff61; color: #10170d; font-weight: 700; cursor: pointer; box-shadow: 0 0 18px #caff6122; }
+    .restart-button:hover { background: #d8ff8c; }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 860px) {
+      main { padding-right: 2.5%; padding-left: 2.5%; }
+      .topbar { padding-right: 4%; padding-left: 4%; }
+      .workspace { grid-template-columns: minmax(0, 1fr) minmax(235px, .5fr); gap: 8px; }
+      .side-column { gap: 8px; }
+    }
+
+    @media (max-width: 640px) {
+      .topbar { height: 48px; }
+      .brand-tag { display: none; }
+      main { grid-template-rows: auto auto minmax(0, 1fr); gap: 6px; height: calc(100vh - 48px); height: calc(100svh - 48px); padding: 7px 10px; }
+      .page-heading { min-height: 34px; gap: 8px; }
+      .eyebrow, .subtitle { display: none; }
+      h1 { font-size: 21px; }
+      .round-box { min-width: 102px; padding: 5px 8px; }
+      .round-label { font-size: 7px; }
+      .round-row { margin-top: 1px; }
+      .round-time { font-size: 14px; }
+      .round-track { margin-top: 4px; }
+      .score-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .metric { padding: 6px 5px; border-bottom: 0 !important; }
+      .metric-label { font-size: 7px; }
+      .metric-value { margin-top: 4px; font-size: 12px; }
+      .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto minmax(0, .52fr); gap: 6px; }
+      .chart-panel { grid-column: 1; grid-row: 1; }
+      .chart-visual { grid-template-columns: minmax(0, 1fr) 112px; }
+      .chart-wrap { height: 100%; padding: 4px 4px 0 3px; }
+      .chart-tooltip { top: 8px; left: 42px; padding: 5px 6px; font-size: 7px; }
+      .chart-price-rail { grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 0; padding: 6px 8px; border-top: 0; border-left: 1px solid var(--line); }
+      .chart-price-item { display: flex; flex-direction: column; justify-content: center; padding: 4px 0; border-right: 0; border-bottom: 1px solid var(--line); }
+      .chart-price-item:last-child { border-bottom: 0; }
+      .chart-price-symbol { font-size: 8px; }
+      .chart-price-value { margin-top: 3px; font-size: 11px; }
+      .chart-price-caption { margin-top: 2px; font-size: 6px; }
+      .legend { gap: 8px; padding: 6px 10px; }
+      .legend-item { font-size: 8px; }
+      .trade-panel { grid-column: 1; grid-row: 2; }
+      .panel-heading { gap: 5px; padding: 7px 9px; }
+      .panel-title { font-size: 11px; }
+      .market-timestamp { font-size: 7px; }
+      .trade-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 5px 8px; }
+      .trade-stock, .trade-stock:first-child, .trade-stock:last-child { padding: 0 5px; border-right: 1px solid var(--line); border-bottom: 0; }
+      .trade-stock:first-child { padding-left: 0; }
+      .trade-stock:last-child { padding-right: 0; border-right: 0; }
+      .trade-stock-heading { gap: 3px; }
+      .trade-stock .stock-price { font-size: 9px; }
+      .trade-actions { gap: 4px; margin-top: 5px; }
+      .trade-button { min-height: 27px; padding: 2px; font-size: 9px; }
+      .side-column { grid-column: 1; grid-row: 3; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); grid-template-rows: minmax(0, 1fr); gap: 6px; }
+      .stock-list { padding: 0 7px; }
+      .stock-row { padding: 5px 1px; }
+      .stock-main { gap: 3px; }
+      .stock-identity { gap: 4px; }
+      .stock-dot { width: 6px; height: 6px; }
+      .ticker { font-size: 9px; }
+      .company, .stock-change { display: none; }
+      .stock-price { font-size: 9px; }
+      .stock-position { margin-top: 3px; font-size: 7px; }
+      .feed { padding: 0 8px 3px; }
+      .feed-item { grid-template-columns: 6px minmax(0, 1fr) auto; gap: 4px; padding: 5px 0; font-size: 8px; }
+      .feed-time { font-size: 7px; }
+      .feed-item:nth-child(n+4) { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">↗</span><span class="brand-name">market dash</span><span class="brand-tag">PAPER TRADING</span></div>
+    <div class="market-status"><span class="live-dot" aria-hidden="true"></span><span id="market-status">MARKET OPEN</span></div>
+  </header>
+
+  <main>
+    <section class="page-heading" aria-label="Game status">
+      <div>
+        <p class="eyebrow">Your opening balance: $10,000</p>
+        <h1>Make your move.</h1>
+        <p class="subtitle">The market won't wait. Buy low, sell high.</p>
+      </div>
+      <div class="round-box" aria-label="Time remaining">
+        <div class="round-label">Time left</div>
+        <div class="round-row"><span class="round-time" id="time-left">3:00</span><span class="round-label">/ 3:00</span></div>
+        <div class="round-track"><div class="round-fill" id="round-fill"></div></div>
+      </div>
+    </section>
+
+    <section class="score-strip" aria-label="Portfolio summary">
+      <div class="metric"><div class="metric-label">Portfolio value</div><div class="metric-value" id="portfolio-value">$10,000.00</div></div>
+      <div class="metric"><div class="metric-label">Total return</div><div class="metric-value" id="total-return">$0.00</div></div>
+      <div class="metric"><div class="metric-label">Buying power</div><div class="metric-value" id="buying-power">$10,000.00</div></div>
+      <div class="metric"><div class="metric-label">Trades made</div><div class="metric-value" id="trade-count">0</div></div>
+    </section>
+
+    <div class="workspace">
+      <section class="panel chart-panel" aria-labelledby="chart-title">
+        <div class="panel-heading">
+          <h2 class="panel-title" id="chart-title">Live market</h2>
+          <span class="market-timestamp" id="market-time">T+00:00</span>
+        </div>
+        <div class="chart-visual">
+          <div class="chart-wrap">
+            <canvas id="chart" role="img" aria-label="Live chart showing the prices of three stocks"></canvas>
+            <div class="chart-tooltip" id="chart-label">LIVE · 3 STOCKS</div>
+          </div>
+          <aside class="chart-price-rail" id="chart-prices" aria-label="Current stock prices"></aside>
+        </div>
+        <div class="legend" id="legend" aria-label="Stock chart legend"></div>
+      </section>
+
+      <section class="panel trade-panel" aria-labelledby="trade-title">
+        <div class="panel-heading"><h2 class="panel-title" id="trade-title">Make a trade</h2><span class="market-timestamp">ONE SHARE PER TRADE</span></div>
+        <div class="trade-controls" id="trade-controls"></div>
+      </section>
+
+      <div class="side-column">
+        <section class="panel" aria-labelledby="stocks-title">
+          <div class="panel-heading"><h2 class="panel-title" id="stocks-title">Your watchlist</h2><span class="market-timestamp">USD</span></div>
+          <div class="stock-list" id="stock-list"></div>
+        </section>
+        <section class="panel" aria-labelledby="activity-title">
+          <div class="panel-heading"><h2 class="panel-title" id="activity-title">Trade activity</h2><span class="market-timestamp" id="activity-count">0 TRADES</span></div>
+          <div class="feed" id="activity-feed" aria-live="polite"><div class="empty-feed">Your first move is waiting.</div></div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div class="toast" id="toast" role="status" hidden></div>
+  <div class="game-overlay" id="game-overlay" hidden>
+    <section class="game-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <div class="modal-icon" id="modal-icon" aria-hidden="true">↗</div>
+      <h2 id="modal-title">Time's up.</h2>
+      <p class="modal-copy" id="modal-copy">The market has closed. Here's how your portfolio did.</p>
+      <div class="final-pnl" id="final-pnl">$0.00</div>
+      <button class="restart-button" id="restart-button">Play again</button>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      const ROUND_SECONDS = 180;
+      const MARKET_TICK_MS = 200;
+      const MARKET_SWING_MULTIPLIER = 1.8;
+      const CHART_WINDOW_SECONDS = 20;
+      const CHART_WINDOW_POINTS = Math.ceil(CHART_WINDOW_SECONDS * 1000 / MARKET_TICK_MS) + 1;
+      const CHART_RANGE_PERCENT = 30;
+      const STARTING_CASH = 10000;
+      const stocks = [
+        { symbol: 'NVDA', name: 'NVIDIA', price: 132.50, start: 132.50, color: '#5ef0aa', volatility: 0.010, drift: 0.0002, pastChange: -0.055, pastVolatility: 0.011, historySeed: 17, shares: 0, history: [] },
+        { symbol: 'TSLA', name: 'Tesla', price: 248.00, start: 248.00, color: '#ff718b', volatility: 0.014, drift: -0.0001, pastChange: 0.065, pastVolatility: 0.015, historySeed: 31, shares: 0, history: [] },
+        { symbol: 'AAPL', name: 'Apple', price: 211.75, start: 211.75, color: '#85b7ff', volatility: 0.008, drift: 0.0001, pastChange: -0.035, pastVolatility: 0.009, historySeed: 47, shares: 0, history: [] }
+      ];
+      const elements = {
+        chart: document.querySelector('#chart'),
+        chartPrices: document.querySelector('#chart-prices'),
+        stockList: document.querySelector('#stock-list'),
+        tradeControls: document.querySelector('#trade-controls'),
+        legend: document.querySelector('#legend'),
+        portfolio: document.querySelector('#portfolio-value'),
+        return: document.querySelector('#total-return'),
+        cash: document.querySelector('#buying-power'),
+        tradeCount: document.querySelector('#trade-count'),
+        time: document.querySelector('#time-left'),
+        fill: document.querySelector('#round-fill'),
+        marketTime: document.querySelector('#market-time'),
+        status: document.querySelector('#market-status'),
+        feed: document.querySelector('#activity-feed'),
+        activityCount: document.querySelector('#activity-count'),
+        toast: document.querySelector('#toast'),
+        overlay: document.querySelector('#game-overlay'),
+        modalIcon: document.querySelector('#modal-icon'),
+        modalTitle: document.querySelector('#modal-title'),
+        modalCopy: document.querySelector('#modal-copy'),
+        finalPnl: document.querySelector('#final-pnl'),
+        restart: document.querySelector('#restart-button')
+      };
+
+      let cash = STARTING_CASH;
+      let remaining = ROUND_SECONDS;
+      let tradeCount = 0;
+      let finished = false;
+      let historyIndex = 0;
+      let tickTimer;
+      let clockTimer;
+      let toastTimer;
+      let chartFrame;
+      let chartProgress = 1;
+      let animationStart = null;
+      let chartRangePercent = CHART_RANGE_PERCENT;
+      const trades = [];
+
+      const money = value => `$${Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+      function formatTime(seconds) {
+        return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`;
+      }
+
+      function portfolioValue() {
+        return cash + stocks.reduce((sum, stock) => sum + stock.price * stock.shares, 0);
+      }
+
+      function seedHistory(stock) {
+        let randomState = stock.historySeed;
+        let cumulativeChange = 0;
+        const changes = [cumulativeChange];
+        for (let index = 1; index < CHART_WINDOW_POINTS; index++) {
+          randomState = (randomState * 48271) % 2147483647;
+          const firstShock = randomState / 2147483647 - 0.5;
+          randomState = (randomState * 48271) % 2147483647;
+          const secondShock = randomState / 2147483647 - 0.5;
+          randomState = (randomState * 48271) % 2147483647;
+          const thirdShock = randomState / 2147483647 - 0.5;
+          const noise = (firstShock + secondShock + thirdShock) * 2 * stock.pastVolatility;
+          cumulativeChange += stock.pastChange / (CHART_WINDOW_POINTS - 1) + noise;
+          changes.push(cumulativeChange);
+        }
+        const endingChange = cumulativeChange;
+        return changes.map(change => stock.start * (1 + change - endingChange));
+      }
+
+      function renderStocks() {
+        elements.stockList.innerHTML = stocks.map(stock => {
+          const change = ((stock.price / stock.start) - 1) * 100;
+          const changeClass = change >= 0 ? 'positive' : 'negative';
+          return `<article class="stock-row">
+            <div class="stock-main">
+              <div class="stock-identity"><span class="stock-dot" style="background:${stock.color}"></span><div><div class="ticker">${stock.symbol}</div><div class="company">${stock.name}</div></div></div>
+              <div><div class="stock-price">${money(stock.price)}</div><div class="stock-change ${changeClass}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div></div>
+            </div>
+            <div class="stock-position"><span>YOU OWN</span><span>${stock.shares} share${stock.shares === 1 ? '' : 's'} · ${money(stock.price * stock.shares)}</span></div>
+          </article>`;
+        }).join('');
+        elements.legend.innerHTML = stocks.map(stock => `<span class="legend-item"><span class="legend-dot" style="background:${stock.color}"></span>${stock.symbol}</span>`).join('');
+      }
+
+      function renderTradeControls() {
+        elements.tradeControls.innerHTML = stocks.map((stock, index) => `<article class="trade-stock">
+          <div class="trade-stock-heading">
+            <div class="trade-stock-name"><span class="stock-dot" style="background:${stock.color}"></span><span class="ticker">${stock.symbol}</span></div>
+            <span class="stock-price">${money(stock.price)}</span>
+          </div>
+          <div class="trade-actions"><button class="trade-button buy" data-action="buy" data-stock="${index}" aria-label="Buy one share of ${stock.symbol}" ${finished || cash < stock.price ? 'disabled' : ''}>+ Buy</button><button class="trade-button sell" data-action="sell" data-stock="${index}" aria-label="Sell one share of ${stock.symbol}" ${finished || stock.shares === 0 ? 'disabled' : ''}>− Sell</button></div>
+        </article>`).join('');
+      }
+
+      function renderSummary() {
+        const value = portfolioValue();
+        const pnl = value - STARTING_CASH;
+        elements.portfolio.textContent = money(value);
+        elements.return.textContent = `${pnl >= 0 ? '+' : '−'}${money(pnl)}`;
+        elements.return.className = `metric-value ${pnl > 0 ? 'positive' : pnl < 0 ? 'negative' : ''}`;
+        elements.cash.textContent = money(cash);
+        elements.tradeCount.textContent = tradeCount;
+      }
+
+      function renderChartPrices() {
+        elements.chartPrices.innerHTML = stocks.map(stock => `<div class="chart-price-item">
+          <div class="chart-price-symbol"><span class="stock-dot" style="background:${stock.color}"></span>${stock.symbol}</div>
+          <div class="chart-price-value">${money(stock.price)}</div>
+          <div class="chart-price-caption">LIVE PRICE</div>
+        </div>`).join('');
+      }
+
+      function drawChart() {
+        const canvas = elements.chart;
+        const bounds = canvas.getBoundingClientRect();
+        if (!bounds.width || !bounds.height) return;
+        const ratio = window.devicePixelRatio || 1;
+        const pixelWidth = Math.round(bounds.width * ratio);
+        const pixelHeight = Math.round(bounds.height * ratio);
+        if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+          canvas.width = pixelWidth;
+          canvas.height = pixelHeight;
+        }
+        const context = canvas.getContext('2d');
+        context.setTransform(ratio, 0, 0, ratio, 0, 0);
+
+        const width = bounds.width;
+        const height = bounds.height;
+        const pad = { top: 18, right: 12, bottom: 26, left: 46 };
+        const plotWidth = width - pad.left - pad.right;
+        const plotHeight = height - pad.top - pad.bottom;
+        const values = stocks.flatMap(chartSeries);
+        if (values.length === 0) return;
+        const visibleExtent = Math.max(...values.map(value => Math.abs(value)));
+        if (visibleExtent > chartRangePercent * 0.8) {
+          chartRangePercent = Math.max(chartRangePercent, Math.ceil((visibleExtent * 1.25) / 5) * 5);
+        }
+        const minimum = -chartRangePercent;
+        const maximum = chartRangePercent;
+        const y = value => pad.top + (maximum - value) / (maximum - minimum) * plotHeight;
+
+        context.clearRect(0, 0, width, height);
+        context.font = '9px "DM Mono", monospace';
+        context.fillStyle = '#84978d';
+        context.strokeStyle = '#26372e';
+        context.lineWidth = 1;
+        for (let index = 0; index <= 4; index++) {
+          const gridY = pad.top + (plotHeight / 4) * index;
+          context.beginPath();
+          context.moveTo(pad.left, gridY);
+          context.lineTo(width - pad.right, gridY);
+          context.stroke();
+          const labelValue = maximum - ((maximum - minimum) / 4) * index;
+          context.fillText(`${labelValue.toFixed(1)}%`, 0, gridY + 3);
+        }
+
+        stocks.forEach(stock => {
+          const series = chartSeries(stock);
+          if (series.length < 2) return;
+          context.beginPath();
+          series.forEach((value, index) => {
+            const x = pad.left + (index / (CHART_WINDOW_POINTS - 1)) * plotWidth;
+            const pointY = y(value);
+            if (index === 0) context.moveTo(x, pointY);
+            else context.lineTo(x, pointY);
+          });
+          context.strokeStyle = stock.color;
+          context.lineWidth = 4;
+          context.lineJoin = 'round';
+          context.lineCap = 'round';
+          context.shadowColor = stock.color;
+          context.shadowBlur = 12;
+          context.stroke();
+
+          const endX = pad.left + plotWidth;
+          const endY = y(series[series.length - 1]);
+          context.beginPath();
+          context.arc(endX, endY, 4, 0, Math.PI * 2);
+          context.fillStyle = stock.color;
+          context.fill();
+          context.shadowBlur = 0;
+        });
+
+        context.textAlign = 'left';
+        context.fillStyle = '#84978d';
+        context.fillText(`${CHART_WINDOW_SECONDS}S AGO`, pad.left, height - 7);
+        context.textAlign = 'right';
+        context.fillText('NOW', width - pad.right, height - 7);
+      }
+
+      function chartPrices(stock) {
+        const prices = stock.history.slice(0, -1);
+        const previousPrice = stock.previousPrice ?? stock.price;
+        prices.push(previousPrice + (stock.price - previousPrice) * chartProgress);
+        return prices.slice(-CHART_WINDOW_POINTS);
+      }
+
+      function chartSeries(stock) {
+        const prices = chartPrices(stock);
+        const baseline = prices[0] ?? stock.price;
+        return prices.map(price => ((price / baseline) - 1) * 100);
+      }
+
+      function animateChart(timestamp) {
+        if (animationStart === null) animationStart = timestamp;
+        chartProgress = Math.min((timestamp - animationStart) / MARKET_TICK_MS, 1);
+        drawChart();
+        if (!finished) chartFrame = window.requestAnimationFrame(animateChart);
+      }
+
+      function update() {
+        renderStocks();
+        renderChartPrices();
+        renderTradeControls();
+        renderSummary();
+        drawChart();
+      }
+
+      function showToast(message) {
+        elements.toast.textContent = message;
+        elements.toast.hidden = false;
+        window.clearTimeout(toastTimer);
+        toastTimer = window.setTimeout(() => { elements.toast.hidden = true; }, 1700);
+      }
+
+      function addTrade(action, stock) {
+        const price = stock.price;
+        const time = `${String(Math.floor((ROUND_SECONDS - remaining) / 60)).padStart(2, '0')}:${String((ROUND_SECONDS - remaining) % 60).padStart(2, '0')}`;
+        tradeCount++;
+        const event = { action, stock, price, time };
+        trades.unshift(event);
+        elements.activityCount.textContent = `${tradeCount} TRADE${tradeCount === 1 ? '' : 'S'}`;
+        elements.feed.innerHTML = trades.slice(0, 5).map(trade => `<div class="feed-item"><span class="feed-mark ${trade.action}"></span><span class="feed-text"><strong>${trade.action === 'buy' ? 'Bought' : 'Sold'}</strong> 1 ${trade.stock.symbol} at ${money(trade.price)}</span><span class="feed-time">${trade.time}</span></div>`).join('');
+        showToast(`${action === 'buy' ? 'Bought' : 'Sold'} 1 ${stock.symbol} at ${money(price)}`);
+      }
+
+      elements.tradeControls.addEventListener('click', event => {
+        const button = event.target.closest('button[data-action]');
+        if (!button || finished) return;
+        const stock = stocks[Number(button.dataset.stock)];
+        if (button.dataset.action === 'buy') {
+          if (cash < stock.price) return;
+          cash -= stock.price;
+          stock.shares++;
+          addTrade('buy', stock);
+        } else {
+          if (stock.shares === 0) return;
+          cash += stock.price;
+          stock.shares--;
+          addTrade('sell', stock);
+        }
+        update();
+      });
+
+      function moveMarket() {
+        stocks.forEach(stock => {
+          stock.previousPrice = stock.price;
+          const randomMove = (Math.random() + Math.random() + Math.random() - 1.5) * stock.volatility;
+          const meanReversion = ((stock.start - stock.price) / stock.start) * 0.002;
+          stock.price = Math.max(1, stock.price * (1 + stock.drift + randomMove * MARKET_SWING_MULTIPLIER + meanReversion));
+          stock.history.push(stock.price);
+          if (stock.history.length > CHART_WINDOW_POINTS) stock.history.shift();
+        });
+        chartProgress = 0;
+        animationStart = null;
+        historyIndex++;
+        const elapsed = ROUND_SECONDS - remaining;
+        elements.marketTime.textContent = `T+${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`;
+        update();
+      }
+
+      function endGame() {
+        if (finished) return;
+        finished = true;
+        window.clearInterval(tickTimer);
+        window.clearInterval(clockTimer);
+        window.cancelAnimationFrame(chartFrame);
+        chartProgress = 1;
+        elements.status.textContent = 'MARKET CLOSED';
+        const pnl = portfolioValue() - STARTING_CASH;
+        elements.modalTitle.textContent = pnl >= 0 ? 'Nice trading.' : 'Better luck next round.';
+        elements.modalCopy.textContent = `You made ${tradeCount} trade${tradeCount === 1 ? '' : 's'}. Your final portfolio value was ${money(portfolioValue())}.`;
+        elements.finalPnl.textContent = `${pnl >= 0 ? '+' : '−'}${money(pnl)}`;
+        elements.finalPnl.style.color = pnl >= 0 ? 'var(--green)' : 'var(--red)';
+        elements.modalIcon.textContent = pnl >= 0 ? '↗' : '↘';
+        elements.overlay.hidden = false;
+        update();
+        elements.restart.focus();
+      }
+
+      function startClock() {
+        clockTimer = window.setInterval(() => {
+          remaining--;
+          elements.time.textContent = formatTime(remaining);
+          elements.time.classList.toggle('urgent', remaining <= 15);
+          elements.fill.style.transform = `scaleX(${remaining / ROUND_SECONDS})`;
+          if (remaining <= 15) elements.fill.style.background = 'var(--red)';
+          if (remaining <= 0) endGame();
+        }, 1000);
+      }
+
+      function restart() {
+        window.clearInterval(tickTimer);
+        window.clearInterval(clockTimer);
+        window.clearTimeout(toastTimer);
+        window.cancelAnimationFrame(chartFrame);
+        cash = STARTING_CASH;
+        remaining = ROUND_SECONDS;
+        tradeCount = 0;
+        historyIndex = 0;
+        finished = false;
+        chartRangePercent = CHART_RANGE_PERCENT;
+        trades.length = 0;
+        stocks.forEach(stock => {
+          stock.price = stock.start;
+          stock.previousPrice = stock.start;
+          stock.shares = 0;
+          stock.history = seedHistory(stock);
+        });
+        chartProgress = 1;
+        animationStart = null;
+        elements.time.textContent = formatTime(remaining);
+        elements.time.classList.remove('urgent');
+        elements.fill.style.transform = 'scaleX(1)';
+        elements.fill.style.background = 'var(--green)';
+        elements.marketTime.textContent = 'T+00:00';
+        elements.status.textContent = 'MARKET OPEN';
+        elements.activityCount.textContent = '0 TRADES';
+        elements.feed.innerHTML = '<div class="empty-feed">Your first move is waiting.</div>';
+        elements.overlay.hidden = true;
+        elements.toast.hidden = true;
+        update();
+        tickTimer = window.setInterval(moveMarket, MARKET_TICK_MS);
+        startClock();
+        chartFrame = window.requestAnimationFrame(animateChart);
+      }
+
+      elements.restart.addEventListener('click', restart);
+      window.addEventListener('resize', drawChart);
+      stocks.forEach(stock => { stock.history = seedHistory(stock); });
+      update();
+      tickTimer = window.setInterval(moveMarket, MARKET_TICK_MS);
+      startClock();
+      chartFrame = window.requestAnimationFrame(animateChart);
+    })();
+  </script>
+</body>
+</html>
