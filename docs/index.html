@@ -306,9 +306,9 @@
       const CHART_RANGE_PERCENT = 30;
       const STARTING_CASH = 10000;
       const stocks = [
-        { symbol: 'NVDA', name: 'NVIDIA', price: 132.50, start: 132.50, color: '#5ef0aa', volatility: 0.010, drift: 0.0002, pastChange: -0.055, pastVolatility: 0.011, historySeed: 17, shares: 0, history: [] },
-        { symbol: 'TSLA', name: 'Tesla', price: 248.00, start: 248.00, color: '#ff718b', volatility: 0.014, drift: -0.0001, pastChange: 0.065, pastVolatility: 0.015, historySeed: 31, shares: 0, history: [] },
-        { symbol: 'AAPL', name: 'Apple', price: 211.75, start: 211.75, color: '#85b7ff', volatility: 0.008, drift: 0.0001, pastChange: -0.035, pastVolatility: 0.009, historySeed: 47, shares: 0, history: [] }
+        { symbol: 'NVDA', name: 'NVIDIA', price: 132.50, start: 132.50, color: '#5ef0aa', volatility: 0.016, drift: 0.0002, pastChange: -0.09, pastVolatility: 0.018, historySeed: 17, shares: 0, history: [] },
+        { symbol: 'TSLA', name: 'Tesla', price: 248.00, start: 248.00, color: '#ff718b', volatility: 0.022, drift: -0.0001, pastChange: 0.105, pastVolatility: 0.024, historySeed: 31, shares: 0, history: [] },
+        { symbol: 'AAPL', name: 'Apple', price: 211.75, start: 211.75, color: '#85b7ff', volatility: 0.013, drift: 0.0001, pastChange: -0.06, pastVolatility: 0.015, historySeed: 47, shares: 0, history: [] }
       ];
       const elements = {
         chart: document.querySelector('#chart'),
@@ -567,7 +567,7 @@
         stocks.forEach(stock => {
           stock.previousPrice = stock.price;
           const randomMove = (Math.random() + Math.random() + Math.random() - 1.5) * stock.volatility;
-          const meanReversion = ((stock.start - stock.price) / stock.start) * 0.002;
+          const meanReversion = ((stock.start - stock.price) / stock.start) * 0.0008;
           stock.price = Math.max(1, stock.price * (1 + stock.drift + randomMove * MARKET_SWING_MULTIPLIER + meanReversion));
           stock.history.push(stock.price);
           if (stock.history.length > CHART_WINDOW_POINTS) stock.history.shift();
