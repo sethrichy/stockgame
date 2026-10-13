@@ -120,7 +120,7 @@
     .trade-stock-name { display: flex; align-items: center; gap: 7px; }
     .trade-stock .stock-price { font-size: 14px; }
     .trade-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
-    .trade-button { min-height: 52px; border: 1px solid #34473b; border-radius: 4px; background: #141e18; color: var(--ink); font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s, transform .15s, box-shadow .15s; }
+    .trade-button { min-height: 52px; border: 1px solid var(--stock-color); border-radius: 4px; background: color-mix(in srgb, var(--stock-color) 14%, #141e18); color: var(--stock-color); font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s, transform .15s, box-shadow .15s; }
     .trade-button:hover:not(:disabled) { transform: translateY(-1px); }
     .trade-button.buy:hover:not(:disabled) { border-color: var(--green); background: #193427; color: var(--green); box-shadow: 0 0 16px #5ef0aa20; }
     .trade-button.sell:hover:not(:disabled) { border-color: var(--red); background: #361c24; color: var(--red); box-shadow: 0 0 16px #ff718b20; }
@@ -302,8 +302,8 @@
       const MAX_STOCK_PRICE = 200;
       const STARTING_CASH = 10000;
       const stocks = [
-        { symbol: 'NVDA', name: 'NVIDIA', price: 132.50, start: 132.50, color: '#5ef0aa', volatility: 0.024, drift: 0.0002, pastChange: -0.09, pastVolatility: 0.018, historySeed: 17, shares: 0, history: [] },
-        { symbol: 'TM', name: 'Toyota', price: 180.00, start: 180.00, color: '#ff718b', volatility: 0.033, drift: -0.0001, pastChange: 0.105, pastVolatility: 0.024, historySeed: 31, shares: 0, history: [] },
+        { symbol: 'NVDA', name: 'NVIDIA', price: 132.50, start: 132.50, color: '#ff9f43', volatility: 0.024, drift: 0.0002, pastChange: -0.09, pastVolatility: 0.018, historySeed: 17, shares: 0, history: [] },
+        { symbol: 'TM', name: 'Toyota', price: 180.00, start: 180.00, color: '#ff4fa3', volatility: 0.033, drift: -0.0001, pastChange: 0.105, pastVolatility: 0.024, historySeed: 31, shares: 0, history: [] },
         { symbol: 'AAPL', name: 'Apple', price: 190.00, start: 190.00, color: '#85b7ff', volatility: 0.020, drift: 0.0001, pastChange: -0.06, pastVolatility: 0.015, historySeed: 47, shares: 0, history: [] }
       ];
       const elements = {
@@ -402,7 +402,7 @@
 
       function renderTradeControls() {
         if (elements.tradeControls.childElementCount !== stocks.length) {
-          elements.tradeControls.innerHTML = stocks.map((stock, index) => `<article class="trade-stock">
+          elements.tradeControls.innerHTML = stocks.map((stock, index) => `<article class="trade-stock" style="--stock-color:${stock.color}">
             <div class="trade-stock-heading">
               <div class="trade-stock-name"><span class="stock-dot" style="background:${stock.color}"></span><span class="ticker" style="color:${stock.color}">${stock.symbol}</span></div>
               <span class="stock-price"></span>
