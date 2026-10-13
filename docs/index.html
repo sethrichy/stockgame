@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080d0b">
+  <meta name="theme-color" content="#f5f7f5">
   <title>Buy Low Sell High — Stock Trading Game</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
     :root {
-      color-scheme: dark;
-      --ink: #e7f1eb;
-      --muted: #91a49a;
-      --paper: #080d0b;
-      --panel: #101814;
-      --line: #28382f;
-      --green: #5ef0aa;
-      --red: #ff718b;
-      --blue: #85b7ff;
-      --yellow: #ffd36e;
+      color-scheme: light;
+      --ink: #17231c;
+      --muted: #596b60;
+      --paper: #f5f7f5;
+      --panel: #ffffff;
+      --line: #d7e0da;
+      --green: #087a4b;
+      --red: #c12e4a;
+      --blue: #245bb5;
+      --yellow: #866000;
       --mono: 'DM Mono', 'Courier New', monospace;
       --sans: 'Space Grotesk', 'Trebuchet MS', sans-serif;
     }
@@ -31,7 +31,7 @@
       min-height: 100svh;
       overflow: hidden;
       background-color: var(--paper);
-      background-image: radial-gradient(ellipse at 50% -20%, #163022 0, transparent 58%), linear-gradient(#24372d55 1px, transparent 1px), linear-gradient(90deg, #24372d55 1px, transparent 1px);
+      background-image: radial-gradient(ellipse at 50% -20%, #dcefe4 0, transparent 58%), linear-gradient(#dce5df88 1px, transparent 1px), linear-gradient(90deg, #dce5df88 1px, transparent 1px);
       background-size: auto, 36px 36px, 36px 36px;
       color: var(--ink);
       font-family: var(--sans);
@@ -47,29 +47,29 @@
       align-items: center;
       justify-content: space-between;
       padding: 0 3%;
-      background: #080d0bf2;
+      background: #fffffff2;
       border-bottom: 1px solid var(--line);
       color: var(--ink);
       backdrop-filter: blur(14px);
     }
 
     .brand { display: flex; align-items: center; gap: 11px; font-weight: 700; letter-spacing: 0; }
-    .brand-mark { display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid #5ef0aa70; border-radius: 6px; background: #5ef0aa18; color: var(--green); font-size: 17px; box-shadow: 0 0 18px #5ef0aa20; }
+    .brand-mark { display: grid; place-items: center; width: 27px; height: 27px; border: 1px solid #087a4b70; border-radius: 6px; background: #087a4b12; color: var(--green); font-size: 17px; box-shadow: 0 0 6px #087a4b12; }
     .brand-name { font-size: 19px; }
     .brand-tag { margin-left: 2px; color: var(--muted); font-family: var(--mono); font-size: 11px; font-weight: 400; }
-    .market-status { display: flex; align-items: center; gap: 8px; color: #c3d2c9; font-family: var(--mono); font-size: 12px; }
-    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px #5ef0aa99; }
+    .market-status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-family: var(--mono); font-size: 12px; }
+    .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 4px #087a4b33; }
 
     main { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; width: 100%; height: calc(100vh - 64px); height: calc(100svh - 64px); min-height: 0; margin: 0; padding: 12px 3%; overflow: hidden; }
-    .round-box { min-width: 112px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 6px; background: #101814e8; box-shadow: inset 0 1px 0 #ffffff08; }
+    .round-box { min-width: 112px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 6px; background: #ffffffed; box-shadow: inset 0 1px 0 #ffffff; }
     .round-label { color: var(--muted); font-family: var(--mono); font-size: 9px; text-transform: uppercase; }
     .round-row { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
     .round-time { font-family: var(--mono); font-size: 18px; font-weight: 500; font-variant-numeric: tabular-nums; }
     .round-time.urgent { color: var(--red); }
-    .round-track { height: 3px; margin-top: 8px; overflow: hidden; border-radius: 3px; background: #26352d; }
-    .round-fill { width: 100%; height: 100%; background: var(--green); box-shadow: 0 0 10px #5ef0aaaa; transform-origin: left; transition: transform .35s linear, background .3s; }
+    .round-track { height: 3px; margin-top: 8px; overflow: hidden; border-radius: 3px; background: #d7e0da; }
+    .round-fill { width: 100%; height: 100%; background: var(--green); box-shadow: 0 0 4px #087a4b33; transform-origin: left; transition: transform .35s linear, background .3s; }
 
-    .score-strip { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: #101814ed; box-shadow: 0 12px 30px #0003, inset 0 1px 0 #ffffff08; }
+    .score-strip { display: grid; grid-template-columns: repeat(4, 1fr); margin-bottom: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 6px; background: #ffffffed; box-shadow: 0 8px 24px #19332210, inset 0 1px 0 #ffffff; }
     .metric { padding: 16px 20px 17px; border-right: 1px solid var(--line); }
     .metric:last-child { border-right: 0; }
     .metric-label { color: var(--muted); font-family: var(--mono); font-size: 11px; text-transform: uppercase; }
@@ -78,24 +78,24 @@
     .metric-value.negative { color: var(--red); }
 
     .workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(285px, .34fr); grid-template-rows: minmax(0, 1fr) auto; align-items: stretch; min-height: 0; gap: 12px; }
-    .panel { min-width: 0; min-height: 0; border: 1px solid var(--line); border-radius: 6px; background: #101814ed; box-shadow: 0 12px 30px #0003, inset 0 1px 0 #ffffff08; }
+    .panel { min-width: 0; min-height: 0; border: 1px solid var(--line); border-radius: 6px; background: #ffffffed; box-shadow: 0 8px 24px #19332210, inset 0 1px 0 #ffffff; }
     .chart-panel { display: grid; grid-column: 1; grid-row: 1; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
     .trade-panel { grid-column: 1; grid-row: 2; }
-    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 17px; border-bottom: 1px solid var(--line); background: #ffffff03; }
+    .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 17px; border-bottom: 1px solid var(--line); background: #edf3ef; }
     .panel-title { margin: 0; font-size: 16px; font-weight: 600; }
     .market-timestamp { color: var(--muted); font-family: var(--mono); font-size: 10px; }
     .chart-visual { display: grid; grid-template-columns: minmax(0, 1fr) 170px; min-height: 0; }
     .chart-wrap { position: relative; min-width: 0; min-height: 0; height: 100%; padding: 8px 12px 2px 8px; }
     #chart { display: block; width: 100%; height: 100%; }
-    .chart-tooltip { position: absolute; top: 15px; left: 62px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: #0b120feF; color: var(--green); font-family: var(--mono); font-size: 9px; pointer-events: none; }
-    .chart-price-rail { display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); align-items: center; min-height: 0; padding: 12px 14px; border-left: 1px solid var(--line); background: #080d0b55; }
+    .chart-tooltip { position: absolute; top: 15px; left: 62px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: #ffffffef; color: var(--green); font-family: var(--mono); font-size: 9px; pointer-events: none; }
+    .chart-price-rail { display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); align-items: center; min-height: 0; padding: 12px 14px; border-left: 1px solid var(--line); background: #f5f8f6; }
     .chart-price-item { min-width: 0; padding: 13px 0; border-bottom: 1px solid var(--line); }
     .chart-price-item:last-child { border-bottom: 0; }
     .chart-price-symbol { display: flex; align-items: center; gap: 7px; color: var(--muted); font-family: var(--mono); font-size: 11px; }
     .chart-price-value { margin-top: 7px; color: var(--ink); font-family: var(--mono); font-size: 19px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .chart-price-caption { margin-top: 4px; color: #74877c; font-family: var(--mono); font-size: 9px; }
+    .chart-price-caption { margin-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 9px; }
     .legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 19px 14px; border-top: 1px solid var(--line); }
-    .legend-item { display: flex; align-items: center; gap: 7px; color: #c1d0c7; font-size: 12px; }
+    .legend-item { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; }
     .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
 
     .side-column { display: grid; grid-column: 2; grid-row: 1 / span 2; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.1fr) minmax(0, .9fr); min-height: 0; gap: 10px; }
@@ -119,11 +119,14 @@
     .trade-stock-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .trade-stock-name { display: flex; align-items: center; gap: 7px; }
     .trade-stock .stock-price { font-size: 14px; }
-    .trade-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 10px; }
-    .trade-button { min-height: 52px; border: 1px solid var(--stock-color); border-radius: 4px; background: color-mix(in srgb, var(--stock-color) 14%, #141e18); color: var(--stock-color); font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s, transform .15s, box-shadow .15s; }
+    .trade-actions { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 7px; margin-top: 10px; }
+    .trade-stock-position { grid-column: 2; grid-row: 1; color: var(--muted); font-family: var(--mono); font-size: 15px; font-weight: 700; text-align: center; }
+    .trade-button.buy { grid-column: 1; grid-row: 2; }
+    .trade-button.sell { grid-column: 2; grid-row: 2; }
+    .trade-button { min-height: 52px; border: 1px solid var(--stock-color); border-radius: 4px; background: color-mix(in srgb, var(--stock-color) 10%, white); color: var(--stock-color); font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s, transform .15s, box-shadow .15s; }
     .trade-button:hover:not(:disabled) { transform: translateY(-1px); }
-    .trade-button.buy:hover:not(:disabled) { border-color: var(--green); background: #193427; color: var(--green); box-shadow: 0 0 16px #5ef0aa20; }
-    .trade-button.sell:hover:not(:disabled) { border-color: var(--red); background: #361c24; color: var(--red); box-shadow: 0 0 16px #ff718b20; }
+    .trade-button.buy:hover:not(:disabled) { border-color: var(--green); background: #e1f3e9; color: var(--green); box-shadow: 0 0 5px #087a4b12; }
+    .trade-button.sell:hover:not(:disabled) { border-color: var(--red); background: #f9e7eb; color: var(--red); box-shadow: 0 0 5px #c12e4a12; }
     .trade-button:disabled { opacity: .4; cursor: not-allowed; }
     .trade-button:focus-visible, .restart-button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 
@@ -132,22 +135,22 @@
     .feed-item:last-child { border-bottom: 0; }
     .feed-mark { width: 6px; height: 6px; margin-top: 4px; border-radius: 50%; background: var(--green); }
     .feed-mark.sell { background: var(--red); }
-    .feed-text { color: #c1d0c7; line-height: 1.4; }
-    .feed-time { color: #84978d; font-family: var(--mono); font-size: 10px; }
+    .feed-text { color: var(--ink); line-height: 1.4; }
+    .feed-time { color: var(--muted); font-family: var(--mono); font-size: 10px; }
     .empty-feed { padding: 20px 0; color: var(--muted); font-size: 13px; text-align: center; }
 
-    .toast { position: fixed; z-index: 5; right: 22px; bottom: 22px; padding: 11px 15px; border: 1px solid #415a4a; border-radius: 5px; background: #111a15; color: var(--ink); font-family: var(--mono); font-size: 11px; box-shadow: 0 5px 24px #0008, 0 0 18px #5ef0aa18; animation: toast-in .2s ease-out; }
+    .toast { position: fixed; z-index: 5; right: 22px; bottom: 22px; padding: 11px 15px; border: 1px solid var(--line); border-radius: 5px; background: #ffffff; color: var(--ink); font-family: var(--mono); font-size: 11px; box-shadow: 0 3px 12px #19332214; animation: toast-in .2s ease-out; }
     @keyframes toast-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
     .game-overlay { position: fixed; z-index: 10; inset: 0; display: grid; place-items: center; padding: 20px; background: #030705d9; backdrop-filter: blur(6px); }
-    .game-modal { width: min(100%, 390px); padding: 30px; border: 1px solid var(--line); border-radius: 6px; background: #101814; box-shadow: 0 24px 80px #0009, 0 0 35px #5ef0aa12; text-align: center; animation: modal-in .25s ease-out; }
+    .game-modal { width: min(100%, 390px); padding: 30px; border: 1px solid var(--line); border-radius: 6px; background: #ffffff; box-shadow: 0 12px 36px #19332220; text-align: center; animation: modal-in .25s ease-out; }
     @keyframes modal-in { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
-    .modal-icon { display: grid; place-items: center; width: 40px; height: 40px; margin: 0 auto 16px; border: 1px solid #5ef0aa55; border-radius: 50%; background: #5ef0aa12; color: var(--green); font-size: 20px; }
+    .modal-icon { display: grid; place-items: center; width: 40px; height: 40px; margin: 0 auto 16px; border: 1px solid #087a4b55; border-radius: 50%; background: #087a4b12; color: var(--green); font-size: 20px; }
     .game-modal h2 { margin: 0; font-size: 24px; }
     .modal-copy { margin: 9px 0 20px; color: var(--muted); font-size: 12px; line-height: 1.6; }
     .final-pnl { margin: 5px 0 22px; font-family: var(--mono); font-size: 33px; font-weight: 500; }
-    .restart-button { width: 100%; min-height: 43px; border: 1px solid #5ef0aa99; border-radius: 4px; background: var(--green); color: #10170d; font-weight: 700; cursor: pointer; box-shadow: 0 0 18px #5ef0aa44; }
-    .restart-button:hover { background: #80f5bd; }
+    .restart-button { width: 100%; min-height: 43px; border: 1px solid #087a4b99; border-radius: 4px; background: var(--green); color: #ffffff; font-weight: 700; cursor: pointer; box-shadow: 0 1px 4px #087a4b18; }
+    .restart-button:hover { background: #06633d; }
     [hidden] { display: none !important; }
 
     @media (max-width: 860px) {
@@ -202,6 +205,7 @@
       .trade-stock-heading { gap: 3px; }
       .trade-stock .stock-price { font-size: 11px; }
       .trade-actions { gap: 5px; margin-top: 7px; }
+      .trade-stock-position { font-size: 12px; }
       .trade-button { min-height: 48px; padding: 3px; font-size: 13px; }
       .side-column { grid-column: 1; grid-row: 3; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); grid-template-rows: minmax(0, 1fr); gap: 6px; }
       .stock-list { padding: 0 7px; }
@@ -294,17 +298,17 @@
   <script>
     (() => {
       const ROUND_SECONDS = 180;
-      const MARKET_TICK_MS = 120;
-      const MARKET_SWING_MULTIPLIER = 3.25;
-      const CHART_WINDOW_SECONDS = 20;
+      const MARKET_TICK_MS = 80;
+      const TRADE_REPEAT_MS = 160;
+      const CHART_WINDOW_SECONDS = 10;
       const CHART_WINDOW_POINTS = Math.ceil(CHART_WINDOW_SECONDS * 1000 / MARKET_TICK_MS) + 1;
       const MIN_STOCK_PRICE = 1;
       const MAX_STOCK_PRICE = 200;
       const STARTING_CASH = 10000;
       const stocks = [
-        { symbol: 'NVDA', name: 'NVIDIA', price: 132.50, start: 132.50, color: '#ff9f43', volatility: 0.024, drift: 0.0002, pastChange: -0.09, pastVolatility: 0.018, historySeed: 17, shares: 0, history: [] },
-        { symbol: 'TM', name: 'Toyota', price: 180.00, start: 180.00, color: '#ff4fa3', volatility: 0.033, drift: -0.0001, pastChange: 0.105, pastVolatility: 0.024, historySeed: 31, shares: 0, history: [] },
-        { symbol: 'AAPL', name: 'Apple', price: 190.00, start: 190.00, color: '#85b7ff', volatility: 0.020, drift: 0.0001, pastChange: -0.06, pastVolatility: 0.015, historySeed: 47, shares: 0, history: [] }
+        { symbol: 'NVDA', name: 'NVIDIA', price: 132.50, start: 132.50, color: '#b85a00', jumpSize: 32, shares: 0, history: [] },
+        { symbol: 'TM', name: 'Toyota', price: 180.00, start: 180.00, color: '#bb286d', jumpSize: 42, shares: 0, history: [] },
+        { symbol: 'AAPL', name: 'Apple', price: 190.00, start: 190.00, color: '#2864b5', jumpSize: 27, shares: 0, history: [] }
       ];
       const elements = {
         chart: document.querySelector('#chart'),
@@ -338,6 +342,8 @@
       let historyIndex = 0;
       let tickTimer;
       let clockTimer;
+      let tradeRepeatTimer;
+      let activeTradePointer = null;
       let toastTimer;
       let chartFrame;
       let chartProgress = 1;
@@ -361,28 +367,13 @@
       }
 
       function seedHistory(stock) {
-        let randomState = stock.historySeed;
-        let cumulativeChange = 0;
-        const changes = [cumulativeChange];
-        for (let index = 1; index < CHART_WINDOW_POINTS; index++) {
-          randomState = (randomState * 48271) % 2147483647;
-          const firstShock = randomState / 2147483647 - 0.5;
-          randomState = (randomState * 48271) % 2147483647;
-          const secondShock = randomState / 2147483647 - 0.5;
-          randomState = (randomState * 48271) % 2147483647;
-          const thirdShock = randomState / 2147483647 - 0.5;
-          const noise = (firstShock + secondShock + thirdShock) * 2 * stock.pastVolatility;
-          cumulativeChange += stock.pastChange / (CHART_WINDOW_POINTS - 1) + noise;
-          changes.push(cumulativeChange);
+        const history = Array(CHART_WINDOW_POINTS);
+        history[CHART_WINDOW_POINTS - 1] = stock.price;
+        for (let index = CHART_WINDOW_POINTS - 2; index >= 0; index--) {
+          const randomMove = (Math.random() * 2 - 1) * stock.jumpSize;
+          history[index] = reflectPrice(history[index + 1] + randomMove);
         }
-        const endingChange = cumulativeChange;
-        const offsets = changes.map(change => change - endingChange);
-        const largestRise = Math.max(0, ...offsets);
-        const largestDrop = Math.min(0, ...offsets);
-        const riseScale = largestRise > 0 ? ((MAX_STOCK_PRICE - stock.start) / stock.start) / largestRise : 1;
-        const dropScale = largestDrop < 0 ? ((stock.start - MIN_STOCK_PRICE) / stock.start) / -largestDrop : 1;
-        const scale = Math.min(1, riseScale, dropScale);
-        return offsets.map(offset => stock.start * (1 + offset * scale));
+        return history;
       }
 
       function renderStocks() {
@@ -407,13 +398,14 @@
               <div class="trade-stock-name"><span class="stock-dot" style="background:${stock.color}"></span><span class="ticker" style="color:${stock.color}">${stock.symbol}</span></div>
               <span class="stock-price"></span>
             </div>
-            <div class="trade-actions"><button class="trade-button buy" data-action="buy" data-stock="${index}" aria-label="Buy one share of ${stock.symbol}">+ Buy</button><button class="trade-button sell" data-action="sell" data-stock="${index}" aria-label="Sell one share of ${stock.symbol}">− Sell</button></div>
+            <div class="trade-actions"><span class="trade-stock-position"></span><button class="trade-button buy" data-action="buy" data-stock="${index}" aria-label="Buy one share of ${stock.symbol}">+ Buy</button><button class="trade-button sell" data-action="sell" data-stock="${index}" aria-label="Sell one share of ${stock.symbol}">− Sell</button></div>
           </article>`).join('');
         }
 
         stocks.forEach((stock, index) => {
           const stockControls = elements.tradeControls.children[index];
           stockControls.querySelector('.trade-stock-heading .stock-price').textContent = money(stock.price);
+          stockControls.querySelector('.trade-stock-position').textContent = stock.shares;
           stockControls.querySelector('[data-action="buy"]').disabled = finished || cash < stock.price;
           stockControls.querySelector('[data-action="sell"]').disabled = finished || stock.shares === 0;
         });
@@ -462,8 +454,8 @@
 
         context.clearRect(0, 0, width, height);
         context.font = '9px "DM Mono", monospace';
-        context.fillStyle = '#84978d';
-        context.strokeStyle = '#26372e';
+        context.fillStyle = '#596b60';
+        context.strokeStyle = '#d7e0da';
         context.lineWidth = 1;
         for (let index = 0; index <= 4; index++) {
           const gridY = pad.top + (plotHeight / 4) * index;
@@ -486,11 +478,10 @@
             else context.lineTo(x, pointY);
           });
           context.strokeStyle = stock.color;
-          context.lineWidth = stock.shares > 0 ? 5 : 4;
-          context.lineJoin = 'round';
-          context.lineCap = 'round';
-          context.shadowColor = stock.color;
-          context.shadowBlur = stock.shares > 0 ? 24 : 12;
+          context.lineWidth = 4;
+          context.lineJoin = 'miter';
+          context.lineCap = 'butt';
+          context.shadowBlur = 0;
           context.stroke();
 
           const endX = pad.left + plotWidth;
@@ -505,7 +496,7 @@
         });
 
         context.textAlign = 'left';
-        context.fillStyle = '#84978d';
+        context.fillStyle = '#596b60';
         context.fillText(`${CHART_WINDOW_SECONDS}S AGO`, pad.left, height - 7);
         context.textAlign = 'right';
         context.fillText('NOW', width - pad.right, height - 7);
@@ -555,31 +546,58 @@
         showToast(`${action === 'buy' ? 'Bought' : 'Sold'} 1 ${stock.symbol} at ${money(price)}`);
       }
 
-      elements.tradeControls.addEventListener('click', event => {
-        const button = event.target.closest('button[data-action]');
-        if (!button || finished) return;
+      function executeTrade(button) {
+        if (finished || button.disabled) return false;
         const stock = stocks[Number(button.dataset.stock)];
+        if (!stock) return false;
         if (button.dataset.action === 'buy') {
-          if (cash < stock.price) return;
+          if (cash < stock.price) return false;
           cash -= stock.price;
           stock.shares++;
           stock.markerPulseStart = window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : performance.now();
           addTrade('buy', stock);
         } else {
-          if (stock.shares === 0) return;
+          if (stock.shares === 0) return false;
           cash += stock.price;
           stock.shares--;
           addTrade('sell', stock);
         }
         update();
+        return true;
+      }
+
+      function stopTradeRepeat(event) {
+        if (event && 'pointerId' in event && activeTradePointer !== event.pointerId) return;
+        window.clearInterval(tradeRepeatTimer);
+        tradeRepeatTimer = undefined;
+        activeTradePointer = null;
+      }
+
+      elements.tradeControls.addEventListener('pointerdown', event => {
+        const button = event.target.closest('button[data-action]');
+        if (!button || !event.isPrimary || event.button !== 0 || tradeRepeatTimer) return;
+        if (!executeTrade(button)) return;
+        activeTradePointer = event.pointerId;
+        button.setPointerCapture(event.pointerId);
+        tradeRepeatTimer = window.setInterval(() => {
+          if (!executeTrade(button)) stopTradeRepeat();
+        }, TRADE_REPEAT_MS);
       });
+
+      elements.tradeControls.addEventListener('click', event => {
+        if (event.detail !== 0) return;
+        const button = event.target.closest('button[data-action]');
+        if (button) executeTrade(button);
+      });
+      window.addEventListener('pointerup', stopTradeRepeat);
+      window.addEventListener('pointercancel', stopTradeRepeat);
+      window.addEventListener('blur', stopTradeRepeat);
 
       function moveMarket() {
         stocks.forEach(stock => {
           stock.previousPrice = stock.price;
-          const randomMove = (Math.random() + Math.random() + Math.random() - 1.5) * stock.volatility;
-          const meanReversion = ((stock.start - stock.price) / stock.start) * 0.0008;
-          stock.price = reflectPrice(stock.price * (1 + stock.drift + randomMove * MARKET_SWING_MULTIPLIER + meanReversion));
+          const randomMove = (Math.random() * 2 - 1) * stock.jumpSize;
+          stock.price = reflectPrice(stock.price + randomMove);
           stock.history.push(stock.price);
           if (stock.history.length > CHART_WINDOW_POINTS) stock.history.shift();
         });
@@ -594,6 +612,7 @@
       function endGame() {
         if (finished) return;
         finished = true;
+        stopTradeRepeat();
         window.clearInterval(tickTimer);
         window.clearInterval(clockTimer);
         window.cancelAnimationFrame(chartFrame);
@@ -624,6 +643,7 @@
       function restart() {
         window.clearInterval(tickTimer);
         window.clearInterval(clockTimer);
+        stopTradeRepeat();
         window.clearTimeout(toastTimer);
         window.cancelAnimationFrame(chartFrame);
         cash = STARTING_CASH;
