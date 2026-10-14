@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f5f7f5">
   <title>Buy Low Sell High — Stock Trading Game</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DotGothic16&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
     :root {
       color-scheme: light;
@@ -21,6 +21,7 @@
       --yellow: #866000;
       --mono: 'DM Mono', 'Courier New', monospace;
       --sans: 'Space Grotesk', 'Trebuchet MS', sans-serif;
+      --pixel: 'DotGothic16', 'Courier New', monospace;
     }
 
     * { box-sizing: border-box; }
@@ -60,7 +61,7 @@
     .market-status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-family: var(--mono); font-size: 12px; }
     .live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); box-shadow: 0 0 4px #087a4b33; }
 
-    main { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 12px; width: 100%; height: calc(100vh - 64px); height: calc(100svh - 64px); min-height: 0; margin: 0; padding: 12px 3%; overflow: hidden; }
+    main { display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 12px; width: 100%; height: calc(100vh - 64px); height: calc(100svh - 64px); min-height: 0; margin: 0; padding: 12px 3%; overflow: hidden; }
     .round-box { min-width: 112px; padding: 5px 9px; border: 1px solid var(--line); border-radius: 6px; background: #ffffffed; box-shadow: inset 0 1px 0 #ffffff; }
     .round-label { color: var(--muted); font-family: var(--mono); font-size: 9px; text-transform: uppercase; }
     .round-row { display: flex; align-items: center; justify-content: space-between; margin-top: 2px; }
@@ -77,33 +78,39 @@
     .metric-value.positive { color: var(--green); }
     .metric-value.negative { color: var(--red); }
 
-    .workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(285px, .34fr); grid-template-rows: minmax(0, 1fr) auto; align-items: stretch; min-height: 0; gap: 12px; }
+    .event-banner { display: grid; grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 9px; width: 100%; min-height: 160px; padding: 15px 18px; overflow: hidden; border: 1px solid var(--line); border-left: 3px solid var(--blue); border-radius: 6px; background: #ffffffed; box-shadow: 0 8px 20px #1933220c; text-align: center; }
+    .event-topline { display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--muted); font-family: var(--mono); font-size: 10px; font-weight: 500; text-transform: uppercase; }
+    .event-status { padding: 4px 8px; border-radius: 3px; background: #245bb512; color: var(--blue); }
+    .event-copy { display: grid; justify-items: center; gap: 5px; width: 100%; min-width: 0; }
+    .event-marquee { width: 100%; overflow: hidden; }
+    .event-marquee-track { display: flex; width: max-content; align-items: center; }
+    .ticker-copy { display: flex; align-items: baseline; gap: 24px; padding-right: 24px; white-space: nowrap; }
+    .event-marquee-track.scrolling { animation: news-scroll var(--ticker-duration, 24s) linear infinite; }
+    @keyframes news-scroll { to { transform: translateX(-50%); } }
+    .event-title { color: var(--green); font-family: var(--pixel); font-size: 34px; font-weight: 400; }
+    .event-separator { color: var(--blue); font-family: var(--mono); font-size: 18px; }
+    .event-impacts { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 7px; }
+    .event-impact { display: flex; align-items: center; gap: 6px; padding: 6px 9px; border: 1px solid var(--line); border-radius: 4px; background: #f5f8f6; font-family: var(--mono); font-size: 10px; white-space: nowrap; }
+    .event-impact strong { color: var(--ink); font-weight: 500; }
+    .event-impact.up span { color: var(--green); }
+    .event-impact.down span { color: var(--red); }
+    .event-impact.steady span { color: var(--muted); }
+
+    .workspace { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); align-items: stretch; min-height: 0; gap: 12px; }
     .panel { min-width: 0; min-height: 0; border: 1px solid var(--line); border-radius: 6px; background: #ffffffed; box-shadow: 0 8px 24px #19332210, inset 0 1px 0 #ffffff; }
     .chart-panel { display: grid; grid-column: 1; grid-row: 1; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; }
-    .trade-panel { grid-column: 1; grid-row: 2; }
     .panel-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 17px; border-bottom: 1px solid var(--line); background: #edf3ef; }
     .panel-title { margin: 0; font-size: 16px; font-weight: 600; }
     .market-timestamp { color: var(--muted); font-family: var(--mono); font-size: 10px; }
-    .chart-visual { display: grid; grid-template-columns: minmax(0, 1fr) 170px; min-height: 0; }
+    .chart-visual { display: grid; grid-template-columns: minmax(0, 1fr) 200px; min-height: 0; }
     .chart-wrap { position: relative; min-width: 0; min-height: 0; height: 100%; padding: 8px 12px 2px 8px; }
     #chart { display: block; width: 100%; height: 100%; }
     .chart-tooltip { position: absolute; top: 15px; left: 62px; padding: 7px 9px; border: 1px solid var(--line); border-radius: 4px; background: #ffffffef; color: var(--green); font-family: var(--mono); font-size: 9px; pointer-events: none; }
-    .chart-price-rail { display: grid; grid-template-rows: repeat(3, minmax(0, 1fr)); align-items: center; min-height: 0; padding: 12px 14px; border-left: 1px solid var(--line); background: #f5f8f6; }
-    .chart-price-item { min-width: 0; padding: 13px 0; border-bottom: 1px solid var(--line); }
-    .chart-price-item:last-child { border-bottom: 0; }
-    .chart-price-symbol { display: flex; align-items: center; gap: 7px; color: var(--muted); font-family: var(--mono); font-size: 11px; }
-    .chart-price-value { margin-top: 7px; color: var(--ink); font-family: var(--mono); font-size: 19px; font-variant-numeric: tabular-nums; white-space: nowrap; }
-    .chart-price-caption { margin-top: 4px; color: var(--muted); font-family: var(--mono); font-size: 9px; }
+    .chart-price-rail { min-height: 0; overflow: auto; border-left: 1px solid var(--line); background: #f5f8f6; }
     .legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 19px 14px; border-top: 1px solid var(--line); }
     .legend-item { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; }
     .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
 
-    .side-column { display: grid; grid-column: 2; grid-row: 1 / span 2; grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(0, 1.1fr) minmax(0, .9fr); min-height: 0; gap: 10px; }
-    .stock-list { padding: 0 12px; }
-    .stock-row { padding: 8px 2px; border-bottom: 1px solid var(--line); }
-    .stock-row:last-child { border-bottom: 0; }
-    .stock-main { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .stock-identity { display: flex; align-items: center; gap: 9px; min-width: 0; }
     .stock-dot { flex: 0 0 auto; width: 8px; height: 8px; border-radius: 50%; }
     .ticker { font-size: 15px; font-weight: 700; }
     .company { overflow: hidden; margin-top: 2px; color: var(--muted); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
@@ -112,32 +119,22 @@
     .stock-change.positive { color: var(--green); }
     .stock-change.negative { color: var(--red); }
     .stock-position { display: flex; justify-content: space-between; margin-top: 11px; color: var(--muted); font-family: var(--mono); font-size: 10px; }
-    .trade-controls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 10px 16px; }
-    .trade-stock { min-width: 0; padding: 0 13px; border-right: 1px solid var(--line); }
-    .trade-stock:first-child { padding-left: 0; }
-    .trade-stock:last-child { padding-right: 0; border-right: 0; }
+    .trade-controls { display: grid; grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(3, minmax(0, 1fr)); height: 100%; padding: 4px 10px; }
+    .trade-stock { display: flex; min-width: 0; flex-direction: column; justify-content: center; padding: 8px 0; border-bottom: 1px solid var(--line); }
+    .trade-stock:last-child { border-bottom: 0; }
     .trade-stock-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
     .trade-stock-name { display: flex; align-items: center; gap: 7px; }
     .trade-stock .stock-price { font-size: 14px; }
-    .trade-actions { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 7px; margin-top: 10px; }
-    .trade-stock-position { grid-column: 2; grid-row: 1; color: var(--muted); font-family: var(--mono); font-size: 15px; font-weight: 700; text-align: center; }
+    .trade-actions { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 6px; margin-top: 8px; }
+    .trade-stock-position { grid-column: 1 / -1; grid-row: 1; color: var(--muted); font-family: var(--mono); font-size: 11px; font-weight: 700; }
     .trade-button.buy { grid-column: 1; grid-row: 2; }
     .trade-button.sell { grid-column: 2; grid-row: 2; }
-    .trade-button { min-height: 52px; border: 1px solid var(--stock-color); border-radius: 4px; background: color-mix(in srgb, var(--stock-color) 10%, white); color: var(--stock-color); font-size: 15px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s, transform .15s, box-shadow .15s; }
+    .trade-button { min-height: 48px; border: 1px solid var(--stock-color); border-radius: 4px; background: color-mix(in srgb, var(--stock-color) 10%, white); color: var(--stock-color); font-size: 14px; font-weight: 600; cursor: pointer; transition: background .15s, border-color .15s, transform .15s, box-shadow .15s; }
     .trade-button:hover:not(:disabled) { transform: translateY(-1px); }
     .trade-button.buy:hover:not(:disabled) { border-color: var(--green); background: #e1f3e9; color: var(--green); box-shadow: 0 0 5px #087a4b12; }
     .trade-button.sell:hover:not(:disabled) { border-color: var(--red); background: #f9e7eb; color: var(--red); box-shadow: 0 0 5px #c12e4a12; }
     .trade-button:disabled { opacity: .4; cursor: not-allowed; }
     .trade-button:focus-visible, .restart-button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-
-    .feed { padding: 0 12px 4px; overflow: auto; }
-    .feed-item { display: grid; grid-template-columns: 8px 1fr auto; align-items: baseline; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--line); font-size: 12px; }
-    .feed-item:last-child { border-bottom: 0; }
-    .feed-mark { width: 6px; height: 6px; margin-top: 4px; border-radius: 50%; background: var(--green); }
-    .feed-mark.sell { background: var(--red); }
-    .feed-text { color: var(--ink); line-height: 1.4; }
-    .feed-time { color: var(--muted); font-family: var(--mono); font-size: 10px; }
-    .empty-feed { padding: 20px 0; color: var(--muted); font-size: 13px; text-align: center; }
 
     .toast { position: fixed; z-index: 5; right: 22px; bottom: 22px; padding: 11px 15px; border: 1px solid var(--line); border-radius: 5px; background: #ffffff; color: var(--ink); font-family: var(--mono); font-size: 11px; box-shadow: 0 3px 12px #19332214; animation: toast-in .2s ease-out; }
     @keyframes toast-in { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -156,20 +153,18 @@
     @media (max-width: 860px) {
       main { padding-right: 2.5%; padding-left: 2.5%; }
       .topbar { padding-right: 4%; padding-left: 4%; }
-      .workspace { grid-template-columns: minmax(0, 1fr) minmax(235px, .42fr); gap: 8px; }
-      .side-column { gap: 8px; }
+      .workspace { gap: 8px; }
     }
 
     @media (max-width: 640px) {
       body { overflow-x: hidden; overflow-y: auto; }
       .topbar { height: 52px; }
       .brand-tag { display: none; }
-      .brand { gap: 6px; }
       .brand-mark { width: 24px; height: 24px; }
       .brand-name { font-size: 13px; }
       .market-status { gap: 6px; font-size: 10px; }
       .live-dot { width: 6px; height: 6px; }
-      main { grid-template-rows: auto auto; gap: 8px; height: auto; min-height: calc(100vh - 52px); min-height: calc(100svh - 52px); padding: 10px; overflow: visible; }
+      main { grid-template-rows: auto auto auto; gap: 8px; height: auto; min-height: calc(100vh - 52px); min-height: calc(100svh - 52px); padding: 10px; overflow: visible; }
       .round-box { min-width: 64px; padding: 3px 6px; }
       .round-label { display: none; }
       .round-row { margin-top: 0; justify-content: center; }
@@ -181,49 +176,42 @@
       .metric:nth-child(n+3) { border-bottom: 0; }
       .metric-label { font-size: 9px; }
       .metric-value { margin-top: 4px; font-size: 15px; }
-      .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(300px, 55svh) auto auto; gap: 8px; }
+      .event-banner { gap: 7px; min-height: 148px; padding: 12px 10px; }
+      .event-topline { font-size: 9px; }
+      .event-copy { gap: 4px; }
+      .event-title { font-size: 20px; }
+      .event-impacts { gap: 5px; }
+      .event-impact { gap: 4px; padding: 5px 6px; font-size: 8px; }
+      .workspace { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(300px, 65svh) auto; gap: 8px; }
       .chart-panel { grid-column: 1; grid-row: 1; }
-      .chart-visual { grid-template-columns: minmax(0, 1fr) 112px; }
+      .chart-visual { grid-template-columns: minmax(0, 1fr) 140px; }
       .chart-wrap { height: 100%; padding: 4px 4px 0 3px; }
       .chart-tooltip { top: 8px; left: 42px; padding: 5px 6px; font-size: 7px; }
-      .chart-price-rail { grid-template-rows: repeat(3, minmax(0, 1fr)); gap: 0; padding: 6px 8px; border-top: 0; border-left: 1px solid var(--line); }
-      .chart-price-item { display: flex; flex-direction: column; justify-content: center; padding: 4px 0; border-right: 0; border-bottom: 1px solid var(--line); }
-      .chart-price-item:last-child { border-bottom: 0; }
-      .chart-price-symbol { font-size: 10px; }
-      .chart-price-value { margin-top: 3px; font-size: 14px; }
-      .chart-price-caption { margin-top: 2px; font-size: 8px; }
+      .chart-price-rail { border-top: 0; border-left: 1px solid var(--line); }
+      .trade-controls { padding: 2px 7px; }
+      .trade-stock { padding: 5px 0; }
+      .trade-stock-heading { gap: 3px; }
+      .trade-stock-name { gap: 4px; }
+      .trade-stock .stock-price { font-size: 11px; }
+      .trade-actions { gap: 4px; margin-top: 5px; }
+      .trade-stock-position { font-size: 9px; }
+      .trade-button { min-height: 38px; padding: 3px 2px; font-size: 11px; }
       .legend { gap: 10px; padding: 9px 12px; }
       .legend-item { font-size: 10px; }
-      .trade-panel { grid-column: 1; grid-row: 2; }
+      .trade-panel { grid-column: 1 / -1; }
       .panel-heading { gap: 5px; padding: 9px 10px; }
       .panel-title { font-size: 14px; }
       .market-timestamp { font-size: 8px; }
-      .trade-controls { grid-template-columns: repeat(3, minmax(0, 1fr)); padding: 8px; }
-      .trade-stock, .trade-stock:first-child, .trade-stock:last-child { padding: 0 5px; border-right: 1px solid var(--line); border-bottom: 0; }
-      .trade-stock:first-child { padding-left: 0; }
-      .trade-stock:last-child { padding-right: 0; border-right: 0; }
-      .trade-stock-heading { gap: 3px; }
-      .trade-stock .stock-price { font-size: 11px; }
-      .trade-actions { gap: 5px; margin-top: 7px; }
-      .trade-stock-position { font-size: 12px; }
-      .trade-button { min-height: 48px; padding: 3px; font-size: 13px; }
-      .side-column { grid-column: 1; grid-row: 3; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); grid-template-rows: minmax(0, 1fr); gap: 6px; }
-      .stock-list { padding: 0 7px; }
-      .stock-row { padding: 5px 1px; }
-      .stock-main { gap: 3px; }
-      .stock-identity { gap: 4px; }
-      .stock-dot { width: 6px; height: 6px; }
-      .ticker { font-size: 12px; }
-      .company, .stock-change { display: none; }
-      .stock-price { font-size: 12px; }
-      .stock-position { margin-top: 5px; font-size: 9px; }
-      .feed { padding: 0 8px 3px; }
-      .feed-item { grid-template-columns: 6px minmax(0, 1fr) auto; gap: 4px; padding: 6px 0; font-size: 10px; }
-      .feed-time { font-size: 8px; }
+      .trade-controls { padding: 2px 7px; }
+      .trade-stock { padding: 5px 0; }
     }
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; }
+      .event-marquee { overflow: visible; }
+      .event-marquee-track { display: block; width: 100%; animation: none !important; transform: none !important; }
+      .ticker-copy[aria-hidden="true"] { display: none; }
+      .ticker-copy { flex-wrap: wrap; justify-content: center; white-space: normal; }
     }
   </style>
 </head>
@@ -250,6 +238,12 @@
       <div class="metric"><div class="metric-label">Trades made</div><div class="metric-value" id="trade-count">0</div></div>
     </section>
 
+    <aside class="event-banner" id="world-event" aria-live="polite" aria-atomic="true">
+      <div class="event-topline"><span class="event-status">WORLD EVENT</span><span>MARKET IMPACT</span></div>
+      <div class="event-copy"><div class="event-marquee"><div class="event-marquee-track" id="event-track"></div></div></div>
+      <div class="event-impacts" id="event-impacts" aria-label="Expected stock movement"></div>
+    </aside>
+
     <div class="workspace">
       <section class="panel chart-panel" aria-labelledby="chart-title">
         <div class="panel-heading">
@@ -261,26 +255,11 @@
             <canvas id="chart" role="img" aria-label="Live stock price chart with a fixed scale from 0 to 200 dollars"></canvas>
             <div class="chart-tooltip" id="chart-label">PRICE · $0–$200</div>
           </div>
-          <aside class="chart-price-rail" id="chart-prices" aria-label="Current stock prices"></aside>
+          <aside class="chart-price-rail" aria-label="Stock trading controls"><div class="trade-controls" id="trade-controls"></div></aside>
         </div>
         <div class="legend" id="legend" aria-label="Stock chart legend"></div>
       </section>
 
-      <section class="panel trade-panel" aria-labelledby="trade-title">
-        <div class="panel-heading"><h2 class="panel-title" id="trade-title">Make a trade</h2><span class="market-timestamp">ONE SHARE PER TRADE</span></div>
-        <div class="trade-controls" id="trade-controls"></div>
-      </section>
-
-      <div class="side-column">
-        <section class="panel" aria-labelledby="stocks-title">
-          <div class="panel-heading"><h2 class="panel-title" id="stocks-title">Your watchlist</h2><span class="market-timestamp">USD</span></div>
-          <div class="stock-list" id="stock-list"></div>
-        </section>
-        <section class="panel" aria-labelledby="activity-title">
-          <div class="panel-heading"><h2 class="panel-title" id="activity-title">Trade activity</h2><span class="market-timestamp" id="activity-count">0 TRADES</span></div>
-          <div class="feed" id="activity-feed" aria-live="polite"><div class="empty-feed">Your first move is waiting.</div></div>
-        </section>
-      </div>
     </div>
   </main>
 
@@ -298,22 +277,41 @@
   <script>
     (() => {
       const ROUND_SECONDS = 180;
-      const MARKET_TICK_MS = 80;
+      const MARKET_TICK_MS = 100;
       const TRADE_REPEAT_MS = 160;
       const CHART_WINDOW_SECONDS = 10;
       const CHART_WINDOW_POINTS = Math.ceil(CHART_WINDOW_SECONDS * 1000 / MARKET_TICK_MS) + 1;
       const MIN_STOCK_PRICE = 1;
       const MAX_STOCK_PRICE = 200;
       const STARTING_CASH = 10000;
+      const WORLD_EVENT_INTERVAL_SECONDS = 12;
+      const NEWS_DIRECTION_BIAS = 0.1;
+      const WORLD_EVENTS = [
+        { title: 'AI chip demand surges', description: 'Cloud firms rush to expand data-center capacity.', impacts: { NVDA: 1, TM: -0.45, AAPL: 0.6 } },
+        { title: 'Yen strengthens sharply', description: 'Currency shifts pressure Japanese exporters.', impacts: { NVDA: 0.2, TM: -1, AAPL: -0.2 } },
+        { title: 'EV incentives expand', description: 'New rebates lift the outlook for automakers.', impacts: { NVDA: 0.2, TM: 1, AAPL: -0.35 } },
+        { title: 'Chip supply disruption', description: 'Factory delays threaten global electronics output.', impacts: { NVDA: -1, TM: -0.45, AAPL: -0.8 } },
+        { title: 'Record phone preorders', description: 'Strong launch demand boosts consumer-tech shares.', impacts: { NVDA: 0.2, TM: -0.2, AAPL: 1 } },
+        { title: 'Data-center boom accelerates', description: 'Fresh infrastructure spending lifts chipmakers.', impacts: { NVDA: 1, TM: -0.35, AAPL: 0.55 } },
+        { title: 'AI export curbs hit chip shares', description: 'New trade limits threaten overseas sales.', impacts: { NVDA: -1, TM: 0.2, AAPL: -0.65 } },
+        { title: 'Yen slips against the dollar', description: 'A weaker yen gives Japanese exporters room to rally.', impacts: { NVDA: 0.1, TM: 0.9, AAPL: 0.15 } },
+        { title: 'Hybrid demand surprises analysts', description: 'Drivers keep choosing fuel-efficient models.', impacts: { NVDA: 0.2, TM: 1, AAPL: -0.15 } },
+        { title: 'Phone upgrade demand cools', description: 'Retailers report slower sales of premium devices.', impacts: { NVDA: -0.3, TM: 0.2, AAPL: -1 } },
+        { title: 'Cloud budgets face new cuts', description: 'CFOs delay planned data-center upgrades.', impacts: { NVDA: -1, TM: 0.15, AAPL: -0.55 } },
+        { title: 'Shipping costs jump worldwide', description: 'Longer routes raise costs for global manufacturers.', impacts: { NVDA: -0.6, TM: -0.85, AAPL: -0.55 } },
+        { title: 'Central bank signals rate cuts', description: 'Investors turn optimistic on growth shares.', impacts: { NVDA: 0.55, TM: 0.35, AAPL: 0.8 } },
+        { title: 'Driver-assist partnership announced', description: 'Automaker and chipmaker unveil a new collaboration.', impacts: { NVDA: 0.65, TM: 0.8, AAPL: 0.1 } },
+        { title: 'Chip factory outage reported', description: 'A production halt threatens electronics supply.', impacts: { NVDA: -1, TM: -0.3, AAPL: -0.75 } },
+        { title: 'Consumer tech spending rebounds', description: 'Retail data points to stronger device demand.', impacts: { NVDA: 0.35, TM: 0.2, AAPL: 0.9 } },
+        { title: 'Battery breakthrough lifts automakers', description: 'A cheaper battery design boosts EV expectations.', impacts: { NVDA: 0.15, TM: 1, AAPL: -0.2 } }
+      ];
       const stocks = [
-        { symbol: 'NVDA', name: 'NVIDIA', price: 132.50, start: 132.50, color: '#b85a00', jumpSize: 32, shares: 0, history: [] },
-        { symbol: 'TM', name: 'Toyota', price: 180.00, start: 180.00, color: '#bb286d', jumpSize: 42, shares: 0, history: [] },
-        { symbol: 'AAPL', name: 'Apple', price: 190.00, start: 190.00, color: '#2864b5', jumpSize: 27, shares: 0, history: [] }
+        { symbol: 'NVDA', name: 'NVIDIA', price: 132.50, start: 132.50, color: '#b85a00', jumpSize: 28.8, shares: 0, history: [] },
+        { symbol: 'TM', name: 'Toyota', price: 180.00, start: 180.00, color: '#bb286d', jumpSize: 37.8, shares: 0, history: [] },
+        { symbol: 'AAPL', name: 'Apple', price: 190.00, start: 190.00, color: '#2864b5', jumpSize: 24.3, shares: 0, history: [] }
       ];
       const elements = {
         chart: document.querySelector('#chart'),
-        chartPrices: document.querySelector('#chart-prices'),
-        stockList: document.querySelector('#stock-list'),
         tradeControls: document.querySelector('#trade-controls'),
         legend: document.querySelector('#legend'),
         portfolio: document.querySelector('#portfolio-value'),
@@ -324,8 +322,8 @@
         fill: document.querySelector('#round-fill'),
         marketTime: document.querySelector('#market-time'),
         status: document.querySelector('#market-status'),
-        feed: document.querySelector('#activity-feed'),
-        activityCount: document.querySelector('#activity-count'),
+        eventTrack: document.querySelector('#event-track'),
+        eventImpacts: document.querySelector('#event-impacts'),
         toast: document.querySelector('#toast'),
         overlay: document.querySelector('#game-overlay'),
         modalIcon: document.querySelector('#modal-icon'),
@@ -342,14 +340,17 @@
       let historyIndex = 0;
       let tickTimer;
       let clockTimer;
+      let worldEventIndex = -1;
+      let currentWorldEvent;
+      let nextWorldEventAt = 0;
+      let worldEventOrder = [];
+      let worldEventCursor = -1;
       let tradeRepeatTimer;
       let activeTradePointer = null;
       let toastTimer;
       let chartFrame;
       let chartProgress = 1;
       let animationStart = null;
-      const trades = [];
-
       const money = value => `$${Math.abs(value).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
       function formatTime(seconds) {
@@ -376,18 +377,7 @@
         return history;
       }
 
-      function renderStocks() {
-        elements.stockList.innerHTML = stocks.map(stock => {
-          const change = ((stock.price / stock.start) - 1) * 100;
-          const changeClass = change >= 0 ? 'positive' : 'negative';
-          return `<article class="stock-row">
-            <div class="stock-main">
-              <div class="stock-identity"><span class="stock-dot" style="background:${stock.color}"></span><div><div class="ticker">${stock.symbol}</div><div class="company" style="color:${stock.color}">${stock.name}</div></div></div>
-              <div><div class="stock-price">${money(stock.price)}</div><div class="stock-change ${changeClass}">${change >= 0 ? '+' : ''}${change.toFixed(2)}%</div></div>
-            </div>
-            <div class="stock-position"><span>YOU OWN</span><span>${stock.shares} share${stock.shares === 1 ? '' : 's'} · ${money(stock.price * stock.shares)}</span></div>
-          </article>`;
-        }).join('');
+      function renderLegend() {
         elements.legend.innerHTML = stocks.map(stock => `<span class="legend-item"><span class="legend-dot" style="background:${stock.color}"></span>${stock.symbol}</span>`).join('');
       }
 
@@ -421,12 +411,54 @@
         elements.tradeCount.textContent = tradeCount;
       }
 
-      function renderChartPrices() {
-        elements.chartPrices.innerHTML = stocks.map(stock => `<div class="chart-price-item">
-          <div class="chart-price-symbol"><span class="stock-dot" style="background:${stock.color}"></span>${stock.symbol}</div>
-          <div class="chart-price-value">${money(stock.price)}</div>
-          <div class="chart-price-caption">LIVE PRICE</div>
-        </div>`).join('');
+      function createWorldEventOrder(previousEventIndex = -1) {
+        const eventOrder = WORLD_EVENTS.map((event, index) => index);
+        for (let index = eventOrder.length - 1; index > 0; index--) {
+          const randomIndex = Math.floor(Math.random() * (index + 1));
+          [eventOrder[index], eventOrder[randomIndex]] = [eventOrder[randomIndex], eventOrder[index]];
+        }
+        if (eventOrder.length > 1 && eventOrder[0] === previousEventIndex) {
+          [eventOrder[0], eventOrder[1]] = [eventOrder[1], eventOrder[0]];
+        }
+        return eventOrder;
+      }
+
+      function renderNewsTicker() {
+        const tickerCopy = worldEventOrder.map(index => `<span class="event-title">${WORLD_EVENTS[index].title}</span><span class="event-separator" aria-hidden="true">///</span>`).join('');
+        elements.eventTrack.innerHTML = `<div class="ticker-copy">${tickerCopy}</div><div class="ticker-copy" aria-hidden="true">${tickerCopy}</div>`;
+        elements.eventTrack.style.setProperty('--ticker-duration', `${WORLD_EVENTS.length * WORLD_EVENT_INTERVAL_SECONDS}s`);
+        elements.eventTrack.classList.add('scrolling');
+      }
+
+      function resetWorldEvents() {
+        worldEventOrder = createWorldEventOrder();
+        worldEventCursor = -1;
+        worldEventIndex = -1;
+        elements.eventTrack.classList.remove('scrolling');
+        renderNewsTicker();
+      }
+
+      function renderWorldEvent() {
+        elements.eventImpacts.innerHTML = stocks.map(stock => {
+          const impact = currentWorldEvent.impacts[stock.symbol];
+          const direction = impact > 0 ? 'up' : impact < 0 ? 'down' : 'steady';
+          const arrow = impact > 0 ? '↑ UP' : impact < 0 ? '↓ DOWN' : '→ STEADY';
+          return `<span class="event-impact ${direction}"><strong>${stock.symbol}</strong><span>${arrow}</span></span>`;
+        }).join('');
+      }
+
+      function advanceWorldEvent(elapsed) {
+        if (elapsed < nextWorldEventAt) return;
+        if (worldEventCursor + 1 >= worldEventOrder.length) {
+          worldEventOrder = createWorldEventOrder(worldEventIndex);
+          worldEventCursor = -1;
+          renderNewsTicker();
+        }
+        worldEventCursor++;
+        worldEventIndex = worldEventOrder[worldEventCursor];
+        currentWorldEvent = WORLD_EVENTS[worldEventIndex];
+        nextWorldEventAt = elapsed + WORLD_EVENT_INTERVAL_SECONDS;
+        renderWorldEvent();
       }
 
       function drawChart() {
@@ -521,8 +553,7 @@
       }
 
       function update() {
-        renderStocks();
-        renderChartPrices();
+        renderLegend();
         renderTradeControls();
         renderSummary();
         drawChart();
@@ -537,12 +568,7 @@
 
       function addTrade(action, stock) {
         const price = stock.price;
-        const time = `${String(Math.floor((ROUND_SECONDS - remaining) / 60)).padStart(2, '0')}:${String((ROUND_SECONDS - remaining) % 60).padStart(2, '0')}`;
         tradeCount++;
-        const event = { action, stock, price, time };
-        trades.unshift(event);
-        elements.activityCount.textContent = `${tradeCount} TRADE${tradeCount === 1 ? '' : 'S'}`;
-        elements.feed.innerHTML = trades.slice(0, 5).map(trade => `<div class="feed-item"><span class="feed-mark ${trade.action}"></span><span class="feed-text"><strong>${trade.action === 'buy' ? 'Bought' : 'Sold'}</strong> 1 ${trade.stock.symbol} at ${money(trade.price)}</span><span class="feed-time">${trade.time}</span></div>`).join('');
         showToast(`${action === 'buy' ? 'Bought' : 'Sold'} 1 ${stock.symbol} at ${money(price)}`);
       }
 
@@ -594,9 +620,15 @@
       window.addEventListener('blur', stopTradeRepeat);
 
       function moveMarket() {
+        const elapsed = ROUND_SECONDS - remaining;
+        advanceWorldEvent(elapsed);
         stocks.forEach(stock => {
           stock.previousPrice = stock.price;
-          const randomMove = (Math.random() * 2 - 1) * stock.jumpSize;
+          const impact = currentWorldEvent.impacts[stock.symbol];
+          const newsDirection = Math.sign(impact);
+          const alignmentChance = 0.5 + Math.abs(impact) * NEWS_DIRECTION_BIAS;
+          const moveDirection = Math.random() < alignmentChance ? newsDirection : -newsDirection;
+          const randomMove = moveDirection * Math.random() * stock.jumpSize;
           stock.price = reflectPrice(stock.price + randomMove);
           stock.history.push(stock.price);
           if (stock.history.length > CHART_WINDOW_POINTS) stock.history.shift();
@@ -604,7 +636,6 @@
         chartProgress = 0;
         animationStart = null;
         historyIndex++;
-        const elapsed = ROUND_SECONDS - remaining;
         elements.marketTime.textContent = `T+${String(Math.floor(elapsed / 60)).padStart(2, '0')}:${String(elapsed % 60).padStart(2, '0')}`;
         update();
       }
@@ -651,7 +682,9 @@
         tradeCount = 0;
         historyIndex = 0;
         finished = false;
-        trades.length = 0;
+        worldEventIndex = -1;
+        nextWorldEventAt = 0;
+        resetWorldEvents();
         stocks.forEach(stock => {
           stock.price = stock.start;
           stock.previousPrice = stock.start;
@@ -667,8 +700,7 @@
         elements.fill.style.background = 'var(--green)';
         elements.marketTime.textContent = 'T+00:00';
         elements.status.textContent = 'MARKET OPEN';
-        elements.activityCount.textContent = '0 TRADES';
-        elements.feed.innerHTML = '<div class="empty-feed">Your first move is waiting.</div>';
+        advanceWorldEvent(0);
         elements.overlay.hidden = true;
         elements.toast.hidden = true;
         update();
@@ -680,6 +712,8 @@
       elements.restart.addEventListener('click', restart);
       window.addEventListener('resize', drawChart);
       stocks.forEach(stock => { stock.history = seedHistory(stock); });
+      resetWorldEvents();
+      advanceWorldEvent(0);
       update();
       tickTimer = window.setInterval(moveMarket, MARKET_TICK_MS);
       startClock();
